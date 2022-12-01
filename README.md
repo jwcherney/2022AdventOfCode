@@ -8,5 +8,5 @@ Goals:
 
 [] Collect stars for the reindeer
 
-[] Try to do as many of these as I can holiday responsibilities ramp up
+[] Try to do as many of these as I can before holiday responsibilities ramp up
 
