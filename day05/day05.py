@@ -6,20 +6,6 @@ INDICES = {"1": 1, "2": 5, "3": 9, "4": 13, "5": 17, "6": 21, "7": 25, "8": 29, 
 DATAFILE = REAL_DATAFILE
 
 
-def stack_push(stacks, stack, crate):
-    crates = stacks[stack]
-    crates.append(crate)
-    stacks.update({stack: crates})
-    return stacks
-
-
-def stack_pop(stacks, stack):
-    crates = stacks[stack]
-    crate = crates.pop()
-    stacks.update({stack: crates})
-    return crate
-
-
 def setup_stacks(setup_lines):
     stack_line = setup_lines[0].split()
     stacks = {}
@@ -31,7 +17,7 @@ def setup_stacks(setup_lines):
         for x in INDICES.keys():
             index = INDICES[x]
             if index < length and line[index] != ' ':
-                stacks = stack_push(stacks, x, line[index])
+                stacks[x].append(line[index])
     # print(f'stacks setup: {stacks}')
     return stacks
 
@@ -39,12 +25,13 @@ def setup_stacks(setup_lines):
 def part1(stacks, lines):
     for line in lines:
         words = line.split()
-        count = words[1]
-        from_stack = words[3]
-        to_stack = words[5]
-        for x in range(0, int(count)):
-            crate = stack_pop(stacks, from_stack)
-            stacks = stack_push(stacks, to_stack, crate)
+        s_count = words[1]
+        count = int(s_count)
+        from_stack = stacks[words[3]]
+        to_stack = stacks[words[5]]
+        for x in range(0, count):
+            crate = from_stack.pop()
+            to_stack.append(crate)
     return_value = ""
     for stack in stacks.keys():
         return_value += stacks[stack][-1]
@@ -54,14 +41,14 @@ def part1(stacks, lines):
 def part2(stacks, lines):
     for line in lines:
         words = line.split()
-        count = words[1]
-        from_stack = words[3]
-        to_stack = words[5]
-        hopper = []
-        for x in range(0, int(count)):
-            hopper.append(stack_pop(stacks, from_stack))
-        for x in range(0, int(count)):
-            stacks = stack_push(stacks, to_stack, hopper.pop())
+        s_count = words[1]
+        count = int(s_count)
+        from_stack = stacks[words[3]]
+        to_stack = stacks[words[5]]
+        hopper = from_stack[-count:]
+        to_stack.extend(hopper)
+        del from_stack[-count:]
+    # print(f'stacks: {stacks}')
     return_value = ""
     for stack in stacks.keys():
         return_value += stacks[stack][-1]
@@ -86,7 +73,9 @@ def day05(filename):
     setup_lines.reverse()
     stacks_part1 = setup_stacks(setup_lines)
     # print(f'Stacks1: {stacks_part1}')
-    stacks_part2 = setup_stacks(setup_lines)
+    stacks_part2 = {}
+    for x in stacks_part1.keys():
+        stacks_part2.update({x: stacks_part1[x].copy()})
     # print(f'Stacks2: {stacks_part2}')
     part1_movements = part1(stacks_part1, movement_lines)
     print(f'Part 1 output: {part1_movements}')
