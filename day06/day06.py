@@ -1,8 +1,8 @@
 REAL_DATAFILE = "input_data.txt"
 TEST_DATAFILE = "test_input_data.txt"
 
-# DATAFILE = TEST_DATAFILE
-DATAFILE = REAL_DATAFILE
+DATAFILE = TEST_DATAFILE
+# DATAFILE = REAL_DATAFILE
 
 
 START_OF_PACKET = 4
@@ -28,10 +28,11 @@ def find_marker(s_line, marker_length):
 
 def day06(filename):
     with open(filename, 'r') as f:
-        input_data = f.readlines()
+        input_data = f.read().split('\n')
+    # print(f'Input: {input_data}')
     for line in input_data:
-        marker_index = find_marker(line.strip(), START_OF_PACKET)
-        message_index = find_marker(line.strip(), START_OF_MESSAGE)
+        marker_index = find_marker(line, START_OF_PACKET)
+        message_index = find_marker(line, START_OF_MESSAGE)
         print(f' Marker index: {marker_index}')
         print(f'Message index: {message_index}')
 
