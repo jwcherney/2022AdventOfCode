@@ -5,31 +5,21 @@ DATAFILE = REAL_DATAFILE
 
 def day01(filename):
     with open(filename, 'r') as f:
-        input_data = f.readlines()
+        input_data = f.read().split('\n')
     elfs = []
-    sum = 0
-    highest = 0
-    second = 0
-    third = 0
+    sum_total = 0
     for line in input_data:
-        if line == "\n":
-            elfs.append(sum)
-            if highest < sum:
-                third = second
-                second = highest
-                highest = sum
-            elif second < sum:
-                third = second
-                second = sum
-            elif third < sum:
-                third = sum
-            sum = 0
+        if line == '':
+            elfs.append(sum_total)
+            sum_total = 0
         else:
-            sum += int(line)
-    print(f'Highest = {highest}')
-    print(f'Second Highest = {second}')
-    print(f'Third Highest = {third}')
-    print(f'Sum of three highest = {highest + second + third}')
+            sum_total += int(line)
+    elfs.sort(reverse=True)
+    # print(f'elfs: {elfs}')
+    top_three = elfs[0:3]
+    print(f'Top Three: {top_three}')
+    print(f'sum: {sum(top_three)}')
+
 
 if __name__ == '__main__':
     day01(DATAFILE)
