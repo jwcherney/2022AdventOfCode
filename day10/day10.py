@@ -13,7 +13,7 @@ def get_signal_strength(cycle, x_register):
 
 
 def calc_pixel(pixels, cycle, x_register):
-    pixel_setting = '.'
+    pixel_setting = ' '
     if abs(x_register - ((cycle-1) % 40)) <= 1:
         pixel_setting = '#'
     # print(f'cycle: {cycle-1}, mod: {(cycle-1) % 40}, x_register: {x_register}, pixel: {pixel_setting}')
