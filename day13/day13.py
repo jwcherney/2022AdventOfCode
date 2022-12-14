@@ -1,3 +1,6 @@
+import re
+from functools import cmp_to_key
+
 REAL_DATAFILE = "input_data.txt"
 TEST_DATAFILE = "test_input_data.txt"
 
@@ -18,7 +21,7 @@ def cmp_right_order(left, right):
             r_value = right[i]
         except IndexError:
             return -1
-        print(f'comparing {l_value} to {r_value}')
+        # print(f'comparing {l_value} to {r_value}')
         if type(l_value) is int and type(r_value) is int:
             if l_value < r_value:
                 return 1
@@ -35,19 +38,38 @@ def cmp_right_order(left, right):
     return return_value
 
 
+def to_big_list(input_data):
+    big_list = []
+    for x,y in input_data:
+        big_list.append(x)
+        big_list.append(y)
+    return big_list
+
+
 def part1(input_data):
     total = 0
     index = 0
     for item in input_data:
         index += 1
         left, right = item
-        print(f'Comparing {index}: {left} to {right}')
+        # print(f'Comparing {index}: {left} to {right}')
         if cmp_right_order(left, right) > 0:
             total += index
-            print(f'Index {index} in right order')
-        else:
-            print(f'Index {index} not in right order')
+            # print(f'Index {index} in right order')
+        # else:
+        #     print(f'Index {index} not in right order')
     return total
+
+
+def part2(input_data):
+    data = to_big_list(input_data)
+    data.append([[2]])
+    data.append([[6]])
+    sorted_data = sorted(data, key=cmp_to_key(cmp_right_order), reverse=True)
+    print(f'data: {sorted_data}')
+    index_2 = sorted_data.index([[2]])
+    index_6 = sorted_data.index([[6]])
+    return (index_2 + 1) * (index_6 + 1)
 
 
 def process_input(input_data):
@@ -58,31 +80,22 @@ def process_input(input_data):
         if len(line) == 0:
             continue
         # print(f'line: {line}')
-        num = -1
-        l_line = list(line)
+        l_line = re.split('([\[,\]])', line)
+        # print(f'l_line: {l_line}')
         list_of_lists = list()
         for letter in l_line:
             if letter == '[':
                 list_of_lists.append(list())
             elif letter == ']':
                 finished = list_of_lists.pop()
-                if num != -1:
-                    finished.append(num)
-                    num = -1
                 if len(list_of_lists) == 0:
                     list_of_lists.extend(finished)
                 else:
                     list_of_lists[-1].append(finished)
-            elif letter == ',':
-                if num != -1:
-                    list_of_lists[-1].append(num)
-                    num = -1
+            elif letter == ',' or letter == '':
+                continue
             else:
-                if num == -1:
-                    num = int(letter)
-                else:
-                    num *= 10
-                    num += int(letter)
+                list_of_lists[-1].append(int(letter))
         # print(f'list of lists: {list_of_lists}')
         if left is None:
             left = list_of_lists
@@ -103,6 +116,7 @@ def day13(filename):
     # print(f'Input: {input_data}')
     data = process_input(input_data)
     print(f'Part1: Total = {part1(data)}')
+    print(f'Part2: Total = {part2(data)}')
 
 
 if __name__ == '__main__':
