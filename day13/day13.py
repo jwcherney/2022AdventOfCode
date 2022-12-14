@@ -58,6 +58,7 @@ def process_input(input_data):
         if len(line) == 0:
             continue
         # print(f'line: {line}')
+        num = -1
         l_line = list(line)
         list_of_lists = list()
         for letter in l_line:
@@ -65,14 +66,23 @@ def process_input(input_data):
                 list_of_lists.append(list())
             elif letter == ']':
                 finished = list_of_lists.pop()
+                if num != -1:
+                    finished.append(num)
+                    num = -1
                 if len(list_of_lists) == 0:
                     list_of_lists.extend(finished)
                 else:
                     list_of_lists[-1].append(finished)
             elif letter == ',':
-                continue
+                if num != -1:
+                    list_of_lists[-1].append(num)
+                    num = -1
             else:
-                list_of_lists[-1].append(int(letter))
+                if num == -1:
+                    num = int(letter)
+                else:
+                    num *= 10
+                    num += int(letter)
         # print(f'list of lists: {list_of_lists}')
         if left is None:
             left = list_of_lists
