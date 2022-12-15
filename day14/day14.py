@@ -20,7 +20,7 @@ def part1(rocks, max_y, has_floor):
         x, y = active_sand
         if has_floor:
             if y == max_y - 1:
-                print(f'Sand stopped at (floor) {active_sand}')
+                # print(f'Sand stopped at (floor) {active_sand}')
                 if active_sand in sands or active_sand in rocks:
                     print('THATS ODD (floor)')
                     keep_going = False
@@ -40,7 +40,7 @@ def part1(rocks, max_y, has_floor):
         elif (x + 1, y + 1) not in rocks and (x + 1, y + 1) not in sands:
             active_sand = (x + 1, y + 1)
         else:
-            print(f'Sand stopped at (else) {active_sand}')
+            # print(f'Sand stopped at (else) {active_sand}')
             if active_sand in sands or active_sand in rocks:
                 print('THATS ODD (else)')
                 keep_going = False
@@ -98,7 +98,7 @@ def day14(filename):
     max_y = max([r[1] for r in rocks])
     print(f'max_y = {max_y}')
     print(f'Part1: Total: {part1(rocks, max_y, False)}')
-    # print(f'Part2: Total: {part1(rocks, max_y + 2, True)}')
+    print(f'Part2: Total: {part1(rocks, max_y + 2, True)}')
 
 
 if __name__ == '__main__':
