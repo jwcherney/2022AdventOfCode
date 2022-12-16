@@ -29,32 +29,6 @@ def make_sensors_beacons_set(sensors_beacons):
     return sensors, beacons
 
 
-def calc_no_beacons(sensors_beacons, sensors, beacons, y_value, limit_to_max_grid=False):
-    grid = set()
-    index = 0
-    for item in sensors_beacons:
-        index += 1
-        # print(f'Processing line {index}: {item}')
-        sx, sy, bx, by = item
-        d = dist(sx, sy, bx, by)
-        if limit_to_max_grid:
-            min_x = max(0, sx - d)
-            max_x = min(sx + d, MAX_GRID)
-        else:
-            max_x = sx + d
-            min_x = sx - d
-        # print(f'min/max x: {min_x}, {max_x}')
-        for ii in range(min_x, max_x + 1):
-            if dist(ii, y_value, sx, sy) <= d:
-                spot = (ii, y_value)
-                if spot not in sensors and spot not in beacons:
-                    grid.add(spot)
-                    # print(f'added spot: {spot} {item}, {d}, {dist(ii, y_value, sx, sy)}')
-                    # print('.', end='')
-    # print('', flush=True)
-    return grid
-
-
 def is_within(sensors_beacons, x, y):
     for item in sensors_beacons:
         sx, sy, bx, by = item
@@ -70,7 +44,25 @@ def is_in_bounds(x, y):
     return False
 
 
-def calc_part2_2(sensors_beacons):
+def calc_part1(sensors_beacons, y_value):
+    spots = set()
+    for index in (range(0, len(sensors_beacons))):
+        # print(f'Checking line {index+1} of {len(sensors_beacons)+1}')
+        item = sensors_beacons[index]
+        sx, sy, bx, by = item
+        d = dist(bx, by, sx, sy)
+        max_x = sx + d
+        min_x = sx - d
+        for ii in range(min_x, max_x + 1):
+            if dist(ii, y_value, sx, sy) <= d:
+                spots.add((ii, y_value))
+    sensors, beacons = make_sensors_beacons_set(sensors_beacons)
+    spots = spots.difference(sensors)
+    spots = spots.difference(beacons)
+    return len(spots)
+
+
+def calc_part2(sensors_beacons):
     for index in range(0, len(sensors_beacons)):
         # print(f'Checking line {index+1} of {len(sensors_beacons)+1}')
         item = sensors_beacons[index]
@@ -107,11 +99,9 @@ def day15(filename):
         input_data = f.read().split('\n')
     # print(f'Input: {input_data}')
     sensors_beacons = process_input(input_data)
-    sensors, beacons = make_sensors_beacons_set(sensors_beacons)
-    grid = calc_no_beacons(sensors_beacons, sensors, beacons, USE_Y)
-    use_y = len([x for x in grid if x[1] == USE_Y])
-    print(f'Part1: for y = 10, there are {use_y} spaces that cannot have a beacon')
-    spot = calc_part2_2(sensors_beacons)
+    total = calc_part1(sensors_beacons, USE_Y)
+    print(f'Part1: for y = {USE_Y}, there are {total} spaces that cannot have a beacon')
+    spot = calc_part2(sensors_beacons)
     print(f'Empty Spot: {spot}')
     print(f'Part2: Frequency: {4000000 * spot[0] + spot[1]}')
 
