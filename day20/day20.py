@@ -9,11 +9,11 @@ DECRYPTION_CONSTANT = 811589153
 
 
 def transform_to_real(cdata):
-    sorted_mixing = sorted(cdata, key=lambda x: x.imag)
-    for z in sorted_mixing:
-        if z.imag < 0 or z.imag >= len(sorted_mixing):
+    sorted_cdata = sorted(cdata, key=lambda x: x.imag)
+    for z in sorted_cdata:
+        if z.imag < 0 or z.imag >= len(sorted_cdata):
             print(f'Invalid index: {int(z.imag)}')
-    return [int(z.real) for z in sorted_mixing]
+    return [int(z.real) for z in sorted_cdata]
 
 
 def transform_to_complex(rdata):
@@ -21,7 +21,7 @@ def transform_to_complex(rdata):
 
 
 def apply_mix(cdata):
-    # print(get_reals(mixing))
+    # print(get_reals(cdata))
     for index, z in enumerate(cdata):
         r = int(z.real)
         i = int(z.imag)
@@ -40,7 +40,7 @@ def apply_mix(cdata):
                 elif new_i == _min and _min <= zz.imag < _max:
                     cdata[ii] += complex(0, 1)
         cdata[index] = complex(r, new_i)
-        # print(get_reals(mixing))
+        # print(get_reals(cdata))
     return cdata
 
 
