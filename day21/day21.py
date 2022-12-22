@@ -1,3 +1,5 @@
+import sympy
+
 REAL_DATAFILE = "input_data.txt"
 TEST_DATAFILE = "test_input_data.txt"
 
@@ -19,10 +21,10 @@ class Monkey:
         if constant_monkeys is None:
             constant_monkeys = dict()
         if len(self.operation) == 0:
-            print(f'constant: {self} ({found_root})')
+            # print(f'constant: {self} ({found_root})')
             return self.num
         else:
-            print(f'Doing operation: {self} ({found_root})')
+            # print(f'Doing operation: {self} ({found_root})')
             if found_root:
                 if self.m1name in constant_monkeys:
                     lhs = constant_monkeys[self.m1name]
@@ -34,10 +36,10 @@ class Monkey:
                     rhs = left_monkeys[self.m2name]
             else:
                 if self.m1name == 'root':
-                    print(f'Found Root ({found_root})')
+                    # print(f'Found Root ({found_root})')
                     return left_monkeys[self.m2name].get_number(left_monkeys, right_monkeys, constant_monkeys, True)
                 elif self.m2name == 'root':
-                    print(f'Found Root ({found_root})')
+                    # print(f'Found Root ({found_root})')
                     return left_monkeys[self.m1name].get_number(left_monkeys, right_monkeys, constant_monkeys, True)
                 else:
                     if self.m1name in constant_monkeys:
@@ -141,6 +143,30 @@ def solve_for_human(input_data):
     return left_monkeys, right_monkeys, constant_monkeys
 
 
+def copied_solution_slightly_modified_for_my_code_thankyou_hyperneutrino(input_data):
+    monkeys = { "humn": sympy.Symbol("x") }
+    x = [line.strip() for line in input_data]
+    ops = {
+        "+": lambda x, y: x + y,
+        "-": lambda x, y: x - y,
+        "*": lambda x, y: x * y,
+        "/": lambda x, y: x / y,
+    }
+    for a in x:
+        name, expr = a.split(": ")
+        if name in monkeys: continue
+        if expr.isdigit():
+            monkeys[name] = sympy.Integer(expr)
+        else:
+            left, op, right = expr.split()
+            if left in monkeys and right in monkeys:
+                if name == "root":
+                    return sympy.solve(monkeys[left] - monkeys[right])[0]
+                monkeys[name] = ops[op](monkeys[left], monkeys[right])
+            else:
+                x.append(a)
+
+
 def solve_for_root(input_data):
     monkeys = dict()
     for line in input_data:
@@ -166,12 +192,13 @@ def day21(filename):
     # print(f'Input: {input_data}')
     monkeys = solve_for_root(input_data)
     # print(f'Monkey Count: {len(monkeys)}')
-    # root_total = monkeys['root'].get_number(monkeys)
-    # print(f'Part1: Root Total = {root_total}')
-    left_monkeys, right_monkeys, constant_monkeys = solve_for_human(input_data)
+    root_total = monkeys['root'].get_number(monkeys)
+    print(f'Part1: Root Total = {root_total}')
+    # left_monkeys, right_monkeys, constant_monkeys = solve_for_human(input_data)
     # print(f'Monkey Count: {len(left_monkeys)}, {len(right_monkeys)}')
-    human_total = right_monkeys['humn'].get_number(left_monkeys, right_monkeys, constant_monkeys, False)
-    print(f'Part2: Human Total = {human_total}')
+    # human_total = right_monkeys['humn'].get_number(left_monkeys, right_monkeys, constant_monkeys, False)
+    # print(f'Part2: Human Total = {human_total}')
+    print(f'Part2: Human Total = {copied_solution_slightly_modified_for_my_code_thankyou_hyperneutrino(input_data)}')
 
 
 if __name__ == '__main__':
