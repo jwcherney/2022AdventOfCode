@@ -8,12 +8,26 @@ DATAFILE = REAL_DATAFILE
 
 
 class Monkey:
-    def __init__(self):
+    def __init__(self, line=None):
         self.name = ''
         self.num = 0
         self.m1name = ''
         self.m2name = ''
         self.operation = ''
+        if line is not None and len(line) > 0:
+            line = line.split()
+            self.name = line[0].split(':')[0]
+            if len(line) == 4:
+                self.m1name = line[1]
+                self.operation = line[2]
+                self.m2name = line[3]
+            elif len(line) == 2:
+                self.num = float(line[1])
+            else:
+                print(f'ERROR: Invalid monkey line: {line}')
+
+    def is_constant(self):
+        return len(self.operation) == 0
 
     def get_number(self, left_monkeys, right_monkeys=None, constant_monkeys=None, found_root=True):
         if right_monkeys is None:
@@ -21,10 +35,10 @@ class Monkey:
         if constant_monkeys is None:
             constant_monkeys = dict()
         if len(self.operation) == 0:
-            # print(f'constant: {self} ({found_root})')
+            print(f'constant: {self} ({found_root})')
             return self.num
         else:
-            # print(f'Doing operation: {self} ({found_root})')
+            print(f'Doing operation: {self} ({found_root})')
             if found_root:
                 if self.m1name in constant_monkeys:
                     lhs = constant_monkeys[self.m1name]
@@ -36,10 +50,10 @@ class Monkey:
                     rhs = left_monkeys[self.m2name]
             else:
                 if self.m1name == 'root':
-                    # print(f'Found Root ({found_root})')
+                    print(f'Found Root ({found_root})')
                     return left_monkeys[self.m2name].get_number(left_monkeys, right_monkeys, constant_monkeys, True)
                 elif self.m2name == 'root':
-                    # print(f'Found Root ({found_root})')
+                    print(f'Found Root ({found_root})')
                     return left_monkeys[self.m1name].get_number(left_monkeys, right_monkeys, constant_monkeys, True)
                 else:
                     if self.m1name in constant_monkeys:
@@ -104,16 +118,10 @@ def solve_for_human(input_data):
     left_monkeys = dict()
     right_monkeys = dict()
     for line in input_data:
-        raw_monkey = line.split()
-        cooked_monkey = Monkey()
-        cooked_monkey.name = raw_monkey[0].split(':')[0]
+        cooked_monkey = Monkey(line)
         if cooked_monkey.name == 'humn':
             continue
-        if len(raw_monkey) == 4:
-            # Make the cooked_monkey, but don't add it yet
-            cooked_monkey.m1name = raw_monkey[1]
-            cooked_monkey.operation = raw_monkey[2]
-            cooked_monkey.m2name = raw_monkey[3]
+        if not cooked_monkey.is_constant():
             # Make the lhs monkey and add
             lhs_monkey = cooked_monkey.get_lhs_monkey()
             if lhs_monkey.name not in right_monkeys:
@@ -134,12 +142,9 @@ def solve_for_human(input_data):
             # print(f'Monkey: {cooked_monkey}')
             # print(f'LHS Monkey: {lhs_monkey}')
             # print(f'RHS Monkey: {rhs_monkey}')
-        elif len(raw_monkey) == 2:
-            cooked_monkey.num = float(raw_monkey[1])
+        else:
             constant_monkeys[cooked_monkey.name] = cooked_monkey
             # print(f'Monkey: {cooked_monkey}')
-        else:
-            print(f'ERROR: Invalid monkey line: {line}')
     return left_monkeys, right_monkeys, constant_monkeys
 
 
@@ -170,17 +175,7 @@ def copied_solution_slightly_modified_for_my_code_thankyou_hyperneutrino(input_d
 def solve_for_root(input_data):
     monkeys = dict()
     for line in input_data:
-        raw_monkey = line.split()
-        cooked_monkey = Monkey()
-        cooked_monkey.name = raw_monkey[0].split(':')[0]
-        if len(raw_monkey) == 4:
-            cooked_monkey.m1name = raw_monkey[1]
-            cooked_monkey.operation = raw_monkey[2]
-            cooked_monkey.m2name = raw_monkey[3]
-        elif len(raw_monkey) == 2:
-            cooked_monkey.num = float(raw_monkey[1])
-        else:
-            print(f'ERROR: Invalid monkey line: {line}')
+        cooked_monkey = Monkey(line)
         monkeys[cooked_monkey.name] = cooked_monkey
         # print(f'Monkey: {cooked_monkey}')
     return monkeys
@@ -194,10 +189,10 @@ def day21(filename):
     # print(f'Monkey Count: {len(monkeys)}')
     root_total = monkeys['root'].get_number(monkeys)
     print(f'Part1: Root Total = {root_total}')
-    # left_monkeys, right_monkeys, constant_monkeys = solve_for_human(input_data)
+    left_monkeys, right_monkeys, constant_monkeys = solve_for_human(input_data)
     # print(f'Monkey Count: {len(left_monkeys)}, {len(right_monkeys)}')
-    # human_total = right_monkeys['humn'].get_number(left_monkeys, right_monkeys, constant_monkeys, False)
-    # print(f'Part2: Human Total = {human_total}')
+    human_total = right_monkeys['humn'].get_number(left_monkeys, right_monkeys, constant_monkeys, False)
+    print(f'Part2: Human Total = {human_total}')
     print(f'Part2: Human Total = {copied_solution_slightly_modified_for_my_code_thankyou_hyperneutrino(input_data)}')
 
 
